@@ -1,0 +1,14 @@
+platform :ios, '10.0'
+
+install! 'cocoapods', :disable_input_output_paths => true
+
+target 'Runner' do
+  use_frameworks!
+
+  # Flutter のプラグイン依存関係を追加
+  pod 'Flutter', :path => '../flutter/engine'
+
+  # 必要なプラグイン（例：image_picker）
+  pod 'image_picker', '~> 0.8.4+4'  # 必要なプラグインやバージョンに変更
+
+end
