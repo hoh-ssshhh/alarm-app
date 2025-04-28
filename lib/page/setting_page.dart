@@ -7,10 +7,10 @@ class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
 
   @override
-  _SettingPageState createState() => _SettingPageState();
+  SettingPageState createState() => SettingPageState();
 }
 
-class _SettingPageState extends State<SettingPage> {
+class SettingPageState extends State<SettingPage> {
   String userName = 'taro_123'; // 初期のユーザー名
   File? _profileImage;
 
@@ -162,10 +162,10 @@ class EditUserNamePage extends StatefulWidget {
   });
 
   @override
-  _EditUserNamePageState createState() => _EditUserNamePageState();
+  EditUserNamePageState createState() => EditUserNamePageState();
 }
 
-class _EditUserNamePageState extends State<EditUserNamePage> {
+class EditUserNamePageState extends State<EditUserNamePage> {
   late TextEditingController _controller;
 
   @override

@@ -19,7 +19,8 @@ class ClockPainter extends CustomPainter {
     final double radius = size.width / 2;
 
     // 時計の背景を描画
-    paint.color = Colors.black.withOpacity(0.1);
+    paint.color = Colors.black.withAlpha((0.1 * 255).toInt());
+
     canvas.drawCircle(Offset(centerX, centerY), radius, paint);
 
     // 時針を描画 (スタイリッシュに変更)

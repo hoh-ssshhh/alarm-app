@@ -77,7 +77,7 @@ class _FriendPageState extends State<FriendPage> {
                     ),
                   ),
                 );
-              }).toList(),
+              }),
 
               const SizedBox(height: 24),
 
@@ -96,7 +96,7 @@ class _FriendPageState extends State<FriendPage> {
                     icon: const Icon(Icons.chat),
                   ),
                 );
-              }).toList(),
+              }),
             ],
           ),
         ),

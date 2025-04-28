@@ -56,7 +56,7 @@ class _AlarmClockWidgetState extends State<AlarmClockWidget> {
             ListTile(
               leading: const Icon(Icons.alarm),
               title: const Text('アラーム時間を選択'),
-              subtitle: Text('${_selectedTime.format(context)}'),
+              subtitle: Text(_selectedTime.format(context)),
               onTap: _pickTime,
             ),
             const SizedBox(height: 12),
