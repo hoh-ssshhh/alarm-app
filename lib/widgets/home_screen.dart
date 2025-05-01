@@ -1,25 +1,76 @@
-// lib/widgets/home_screen.dart
 import 'package:flutter/material.dart';
 import 'analog_clock.dart';
-import 'party_creation_widget.dart'; // ← さっき作ったやつを使う
+import 'alarm_clock_widget.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  List<Map<String, dynamic>> alarms = [];
+
+  // アラーム追加時のコールバック
+  void _addAlarm(Map<String, dynamic> newAlarm) {
+    setState(() {
+      alarms.add(newAlarm);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: const [
-          SizedBox(
-            width: 200,
-            height: 200,
-            child: AnalogClock(), // ← アナログ時計
+    return Scaffold(
+      appBar: AppBar(title: const Text('共有アラーム')),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(width: 200, height: 200, child: AnalogClock()),
+              const SizedBox(height: 24),
+              AlarmClockWidget(onAlarmAdded: _addAlarm), // ← コールバックを渡す
+              const SizedBox(height: 24),
+              // アラームリストの表示
+              if (alarms.isNotEmpty)
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: alarms.length,
+                  itemBuilder: (context, index) {
+                    final alarm = alarms[index];
+                    return Card(
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 4,
+                      child: ListTile(
+                        title: Text(alarm['title']),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '日付: ${alarm['date'].year}/${alarm['date'].month}/${alarm['date'].day}',
+                            ),
+                            Text('アラーム時間: ${alarm['time'].format(context)}'),
+                            Text('スヌーズ間隔: ${alarm['snooze']}分'),
+                            if (alarm['meeting'] != null)
+                              Text('集合時間: ${alarm['meeting'].format(context)}'),
+                            if (alarm['friends'] != null &&
+                                alarm['friends'].isNotEmpty)
+                              Text('招待したフレンド: ${alarm['friends'].join(', ')}'),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+            ],
           ),
-          SizedBox(height: 24),
-          PartyCreationWidget(), // ← カード型ウィジェット（アラーム設定＋パーティ作成）
-        ],
+        ),
       ),
     );
   }
