@@ -13,6 +13,7 @@ class _AlarmClockWidgetState extends State<AlarmClockWidget> {
   List<Map<String, dynamic>> alarms = [];
   List<String> friendList = ['nana_48', 'ryota_dev', 'miki_chan'];
   List<String> selectedFriends = [];
+
   void showCustomNotification(BuildContext context, String message) {
     final overlay = Overlay.of(context);
     final overlayEntry = OverlayEntry(
@@ -124,6 +125,7 @@ class _AlarmClockWidgetState extends State<AlarmClockWidget> {
     TimeOfDay? alarmTime;
     int snoozeInterval = 5;
     TimeOfDay? meetingTime;
+    selectedFriends = [];
 
     await showDialog(
       context: context,
@@ -232,12 +234,10 @@ class _AlarmClockWidgetState extends State<AlarmClockWidget> {
                       String finalTitle = title;
 
                       if (finalTitle.isEmpty) {
-                        // 既存のアラームタイトル一覧を取得
                         final existingTitles =
                             alarms
                                 .map((alarm) => alarm['title'] as String)
                                 .toSet();
-
                         int counter = 1;
                         while (true) {
                           final generatedTitle = 'アラーム$counter';
@@ -257,20 +257,222 @@ class _AlarmClockWidgetState extends State<AlarmClockWidget> {
                         'meeting': meetingTime,
                         'friends': List<String>.from(selectedFriends),
                       };
+                      setState(() {
+                        alarms.add(newAlarm);
+                      });
 
                       widget.onAlarmAdded(newAlarm);
                       Navigator.pop(dialogContext);
-
                       Future.delayed(Duration.zero, () {
                         showCustomNotification(context, 'アラームが追加されました');
                       });
                     } else {
-                      // ❌ ダイアログは閉じず、警告だけ表示
                       showCustomNotification(context, '必須項目をすべて入力してください');
                     }
                   },
-
                   child: const Text('追加'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _showEditAlarmDialog(
+    int index,
+    Map<String, dynamic> alarmData,
+  ) async {
+    String title = alarmData['title'] ?? '';
+    DateTime? alarmDate = alarmData['date'];
+    TimeOfDay? alarmTime = alarmData['time'];
+    int snoozeInterval = alarmData['snooze'] ?? 5;
+    TimeOfDay? meetingTime = alarmData['meeting'];
+    List<String> editingSelectedFriends = List<String>.from(
+      alarmData['friends'] ?? [],
+    );
+
+    await showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('アラームを編集'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      decoration: const InputDecoration(labelText: 'タイトル（任意）'),
+                      controller: TextEditingController(text: title),
+                      onChanged: (value) => title = value,
+                    ),
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: () async {
+                        final pickedDate = await showDatePicker(
+                          context: dialogContext,
+                          initialDate: alarmDate ?? DateTime.now(),
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime.now().add(
+                            const Duration(days: 30),
+                          ),
+                        );
+                        if (pickedDate != null) {
+                          setState(() => alarmDate = pickedDate);
+                        }
+                      },
+                      child: Text(
+                        alarmDate == null
+                            ? '日付を選択'
+                            : '${alarmDate!.year}/${alarmDate!.month}/${alarmDate!.day}',
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: () async {
+                        final pickedTime = await showTimePicker(
+                          context: dialogContext,
+                          initialTime: alarmTime ?? TimeOfDay.now(),
+                        );
+                        if (pickedTime != null) {
+                          setState(() => alarmTime = pickedTime);
+                        }
+                      },
+                      child: Text(
+                        alarmTime == null
+                            ? 'アラーム時間を選択'
+                            : alarmTime!.format(context),
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        const Text('スヌーズ間隔：'),
+                        Expanded(
+                          child: Slider(
+                            min: 1,
+                            max: 30,
+                            divisions: 29,
+                            label: '$snoozeInterval 分',
+                            value: snoozeInterval.toDouble(),
+                            onChanged: (value) {
+                              setState(() => snoozeInterval = value.toInt());
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        final pickedMeetingTime = await showTimePicker(
+                          context: dialogContext,
+                          initialTime: meetingTime ?? TimeOfDay.now(),
+                        );
+                        if (pickedMeetingTime != null) {
+                          setState(() => meetingTime = pickedMeetingTime);
+                        }
+                      },
+                      child: Text(
+                        meetingTime == null
+                            ? '集合時間を選択（任意）'
+                            : meetingTime!.format(context),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    ElevatedButton.icon(
+                      onPressed: () async {
+                        await showDialog<void>(
+                          context: context,
+                          builder: (friendDialogContext) {
+                            return StatefulBuilder(
+                              builder: (context, setStateDialog) {
+                                return AlertDialog(
+                                  title: const Text('フレンドを編集'),
+                                  content: SizedBox(
+                                    width: double.maxFinite,
+                                    child: ListView.builder(
+                                      shrinkWrap: true,
+                                      itemCount: friendList.length,
+                                      itemBuilder: (context, index) {
+                                        final name = friendList[index];
+                                        final isInvited = editingSelectedFriends
+                                            .contains(name);
+
+                                        return CheckboxListTile(
+                                          title: Text(name),
+                                          value: isInvited,
+                                          onChanged: (checked) {
+                                            setStateDialog(() {
+                                              if (checked == true) {
+                                                editingSelectedFriends.add(
+                                                  name,
+                                                );
+                                              } else {
+                                                editingSelectedFriends.remove(
+                                                  name,
+                                                );
+                                              }
+                                            });
+                                          },
+                                          secondary: const Icon(Icons.person),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed:
+                                          () => Navigator.pop(
+                                            friendDialogContext,
+                                          ),
+                                      child: const Text('完了'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                        );
+                      },
+                      icon: const Icon(Icons.group),
+                      label: const Text('フレンドを編集'),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: const Text('キャンセル'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    if (alarmDate != null && alarmTime != null) {
+                      final updatedAlarm = {
+                        'title': title.isEmpty ? 'アラーム${index + 1}' : title,
+                        'date': alarmDate,
+                        'time': alarmTime,
+                        'snooze': snoozeInterval,
+                        'meeting': meetingTime,
+                        'friends': List<String>.from(editingSelectedFriends),
+                      };
+                      setState(() {
+                        alarms[index] = updatedAlarm;
+                      });
+
+                      widget.onAlarmAdded(updatedAlarm); // これで親にも通知される！
+
+                      Navigator.pop(dialogContext);
+                      Future.delayed(Duration.zero, () {
+                        showCustomNotification(context, 'アラームを更新しました');
+                      });
+                    } else {
+                      showCustomNotification(context, '必須項目をすべて入力してください');
+                    }
+                  },
+                  child: const Text('保存'),
                 ),
               ],
             );
@@ -289,14 +491,20 @@ class _AlarmClockWidgetState extends State<AlarmClockWidget> {
           child: const Text('アラームを追加'),
         ),
         const SizedBox(height: 16),
-        ...alarms.map(
-          (alarm) => Card(
+        ...alarms.asMap().entries.map((entry) {
+          final index = entry.key;
+          final alarm = entry.value;
+          return Card(
             margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
             elevation: 4,
             child: ListTile(
+              trailing: IconButton(
+                icon: const Icon(Icons.edit),
+                onPressed: () => _showEditAlarmDialog(index, alarm),
+              ),
               title: Text(alarm['title']),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -313,8 +521,8 @@ class _AlarmClockWidgetState extends State<AlarmClockWidget> {
                 ],
               ),
             ),
-          ),
-        ),
+          );
+        }),
       ],
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:permission_handler/permission_handler.dart';
 
 // 設定ページ
 class SettingPage extends StatefulWidget {
@@ -105,16 +106,44 @@ class SettingPageState extends State<SettingPage> {
           ListTile(
             leading: const Icon(Icons.notifications),
             title: const Text('通知設定'),
-            onTap: () {},
+            onTap: () async {
+              // 通知の権限設定画面に飛ばす
+              await openAppSettings(); // アプリの設定画面に飛ばす
+            },
           ),
           ListTile(
             leading: const Icon(Icons.info),
             title: const Text('このアプリについて'),
-            onTap: () {},
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('アプリについて'),
+                    content: const Text(
+                      'このアプリケーションはアラームを共有できるアプリケーションです。'
+                      '待ち合わせ時間に寝坊などで遅刻する友達とアラームを共有しましょう。',
+                    ),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('閉じる'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
           ),
+
           ListTile(
-            leading: const Icon(Icons.logout),
-            title: const Text('ログアウト'),
+            leading: const Icon(Icons.logout, color: Colors.redAccent),
+            title: const Text(
+              'ログアウト',
+              style: TextStyle(color: Colors.redAccent),
+            ),
             onTap: () {},
           ),
         ],

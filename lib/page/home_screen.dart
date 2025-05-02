@@ -47,24 +47,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         borderRadius: BorderRadius.circular(16),
                       ),
                       elevation: 4,
-                      child: ListTile(
-                        title: Text(alarm['title']),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '日付: ${alarm['date'].year}/${alarm['date'].month}/${alarm['date'].day}',
-                            ),
-                            Text('アラーム時間: ${alarm['time'].format(context)}'),
-                            Text('スヌーズ間隔: ${alarm['snooze']}分'),
-                            if (alarm['meeting'] != null)
-                              Text('集合時間: ${alarm['meeting'].format(context)}'),
-                            if (alarm['friends'] != null &&
-                                alarm['friends'].isNotEmpty)
-                              Text('招待したフレンド: ${alarm['friends'].join(', ')}'),
-                          ],
-                        ),
-                      ),
                     );
                   },
                 ),
