@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'analog_clock.dart';
-import 'alarm_clock_widget.dart';
+import '../widgets/clock/analog_clock.dart';
+import '../widgets/alarm_clock_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

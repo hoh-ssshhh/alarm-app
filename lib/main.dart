@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'widgets/home_screen.dart'; // ← 追加
+import 'page/home_screen.dart'; // ← 追加
 import 'widgets/bottom_bar.dart';
 import 'page/friend_page.dart';
 import 'page/setting_page.dart';
