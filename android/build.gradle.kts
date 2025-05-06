@@ -1,6 +1,13 @@
+// プロジェクトレベルの build.gradle
+
+plugins {
+    id 'com.android.application'
+    id 'com.google.gms.google-services'  // ← これを追加
+}
+
 allprojects {
     repositories {
-        google()
+        google()  // Googleのリポジトリを追加
         mavenCentral()
     }
 }
@@ -12,6 +19,7 @@ subprojects {
     val newSubprojectBuildDir: Directory = newBuildDir.dir(project.name)
     project.layout.buildDirectory.value(newSubprojectBuildDir)
 }
+
 subprojects {
     project.evaluationDependsOn(":app")
 }
@@ -19,3 +27,5 @@ subprojects {
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
+
+apply plugin: 'com.google.gms.google-services'  // ← これを追加

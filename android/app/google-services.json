@@ -1,0 +1,29 @@
+{
+    "project_info": {
+        "project_number": "406306735772",
+        "project_id": "sharealarm-hoo",
+        "storage_bucket": "sharealarm-hoo.firebasestorage.app"
+    },
+    "client": [
+        {
+            "client_info": {
+                "mobilesdk_app_id": "1:406306735772:android:662996b19299c45c840f59",
+                "android_client_info": {
+                    "package_name": "com.example.alarm"
+                }
+            },
+            "oauth_client": [],
+            "api_key": [
+                {
+                    "current_key": "AIzaSyDHTONtYkNBYOtQtwSZxUYMBE0KSHO8_gI"
+                }
+            ],
+            "services": {
+                "appinvite_service": {
+                    "other_platform_oauth_client": []
+                }
+            }
+        }
+    ],
+    "configuration_version": "1"
+}
