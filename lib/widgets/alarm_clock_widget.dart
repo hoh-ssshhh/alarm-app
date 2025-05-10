@@ -111,6 +111,7 @@ class _AlarmClockWidgetState extends State<AlarmClockWidget> {
 
     if (selectedFriends.isNotEmpty) {
       Future.delayed(Duration.zero, () {
+        if (!mounted) return;
         showCustomNotification(
           context,
           '${selectedFriends.join(", ")} を招待しました',
@@ -263,9 +264,10 @@ class _AlarmClockWidgetState extends State<AlarmClockWidget> {
 
                       widget.onAlarmAdded(newAlarm);
                       Navigator.pop(dialogContext);
-                      Future.delayed(Duration.zero, () {
-                        showCustomNotification(context, 'アラームが追加されました');
-                      });
+
+                      // Navigator.pop が終了してから通知を表示
+                      if (!mounted) return;
+                      showCustomNotification(context, 'アラームが追加されました');
                     } else {
                       showCustomNotification(context, '必須項目をすべて入力してください');
                     }
@@ -462,12 +464,12 @@ class _AlarmClockWidgetState extends State<AlarmClockWidget> {
                         alarms[index] = updatedAlarm;
                       });
 
-                      widget.onAlarmAdded(updatedAlarm); // これで親にも通知される！
-
+                      widget.onAlarmAdded(updatedAlarm);
                       Navigator.pop(dialogContext);
-                      Future.delayed(Duration.zero, () {
-                        showCustomNotification(context, 'アラームを更新しました');
-                      });
+
+                      // Navigator.pop が終了してから通知を表示
+                      if (!mounted) return;
+                      showCustomNotification(context, 'アラームが追加されました');
                     } else {
                       showCustomNotification(context, '必須項目をすべて入力してください');
                     }

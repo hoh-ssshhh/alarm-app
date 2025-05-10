@@ -34,22 +34,28 @@ class _HomeScreenState extends State<HomeScreen> {
               AlarmClockWidget(onAlarmAdded: _addAlarm), // ← コールバックを渡す
               const SizedBox(height: 24),
               // アラームリストの表示
-              if (alarms.isNotEmpty)
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: alarms.length,
-                  itemBuilder: (context, index) {
-                    final alarm = alarms[index];
-                    return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 8),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      elevation: 4,
-                    );
-                  },
-                ),
+              alarms.isNotEmpty
+                  ? ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: alarms.length,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        elevation: 4,
+                        child: ListTile(
+                          title: Text('アラーム: ${alarms[index]["time"] ?? "不明"}'),
+                          subtitle: Text(
+                            'スヌーズ回数: ${alarms[index]["snoozeCount"] ?? "0"}',
+                          ),
+                        ),
+                      );
+                    },
+                  )
+                  : const Text('アラームがまだありません'),
             ],
           ),
         ),
