@@ -5,7 +5,7 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // サインアップ
+  // サインアップしてユーザー作成＋Firestoreに保存
   Future<UserCredential> signUpWithEmail({
     required String email,
     required String password,
@@ -18,9 +18,9 @@ class AuthService {
       );
 
       await userCredential.user?.updateDisplayName(username);
+      await userCredential.user?.sendEmailVerification();
       await userCredential.user?.reload();
 
-      // Firestore にユーザーデータを保存
       await _firestore.collection('users').doc(userCredential.user!.uid).set({
         'uid': userCredential.user!.uid,
         'email': email,
@@ -34,6 +34,7 @@ class AuthService {
     }
   }
 
+  // ログイン
   Future<UserCredential> signInWithEmail(String email, String password) async {
     try {
       return await _auth.signInWithEmailAndPassword(
@@ -43,5 +44,12 @@ class AuthService {
     } catch (e) {
       throw Exception('ログイン失敗: $e');
     }
+  }
+
+  // メール確認チェック
+  Future<bool> isEmailVerified() async {
+    final user = _auth.currentUser;
+    await user?.reload();
+    return user?.emailVerified ?? false;
   }
 }
