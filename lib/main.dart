@@ -8,7 +8,11 @@ import 'page/home_screen.dart';
 import 'page/friend_page.dart';
 import 'page/setting_page.dart';
 import 'page/login_page.dart';
+import 'page/welcom_page.dart';
+import 'page/sign_up_page.dart';
+
 import 'widgets/bottom_bar.dart';
+import 'page/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Firebase初期化前の準備
@@ -26,7 +30,13 @@ class RootApp extends StatelessWidget {
     return MaterialApp(
       title: 'Alarm App',
       debugShowCheckedModeBanner: false,
-      home: AuthGate(), // ログイン状態に応じて画面を切り替える
+      home: const AuthGate(),
+      routes: {
+        '/signup': (context) => const SignUpPage(),
+        '/welcome': (context) => const WelcomePage(),
+        '/home': (context) => const HomeScreen(),
+        '/login': (context) => const LoginPage(),
+      }, // ログイン状態に応じて画面を切り替える
     );
   }
 }

@@ -10,6 +10,11 @@ allprojects {
         google()  // Googleのリポジトリを追加
         mavenCentral()
     }
+    defaultConfig {
+  // 省略...
+  minSdkVersion 21 // Googleログインには21以上必要
+}
+
 }
 
 val newBuildDir: Directory = rootProject.layout.buildDirectory.dir("../../build").get()
@@ -29,3 +34,8 @@ tasks.register<Delete>("clean") {
 }
 
 apply plugin: 'com.google.gms.google-services'  // ← これを追加
+
+defaultConfig {
+  // 省略...
+  minSdkVersion 21 // Googleログインには21以上必要
+}
